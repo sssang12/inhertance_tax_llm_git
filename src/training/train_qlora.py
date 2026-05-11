@@ -46,10 +46,10 @@ except ImportError:
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 from transformers import TrainingArguments
-from trl import SFTConfig, SFTTrainer, DataCollatorForCompletionOnlyLM
+from trl import SFTConfig, SFTTrainer
 
 from src.training.dataset import build_train_eval
-from src.training.prompt_templates import RESPONSE_TEMPLATE, format_for_sft
+from src.training.prompt_templates import format_for_sft
 
 load_dotenv()
 
@@ -229,11 +229,6 @@ def main(config_path: str):
                 texts.append(format_for_sft(ex, tokenizer))
             return texts
 
-    collator = DataCollatorForCompletionOnlyLM(
-        response_template=RESPONSE_TEMPLATE,
-        tokenizer=tokenizer,
-    )
-
     sft_args = SFTConfig(
         output_dir=cfg.output_dir,
         num_train_epochs=cfg.epochs,
@@ -264,13 +259,21 @@ def main(config_path: str):
 
     trainer = SFTTrainer(
         model=model,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         args=sft_args,
         train_dataset=train_ds,
         eval_dataset=eval_ds,
         formatting_func=_fmt,
-        data_collator=collator,
     )
+
+    # Unsloth 권장 방식: 응답 토큰에만 loss 적용 (DataCollatorForCompletionOnlyLM 대체)
+    if UNSLOTH_AVAILABLE:
+        from unsloth.chat_templates import train_on_responses_only
+        trainer = train_on_responses_only(
+            trainer,
+            instruction_part="<|start_header_id|>user<|end_header_id|>\n\n",
+            response_part="<|start_header_id|>assistant<|end_header_id|>\n\n",
+        )
 
     logger.info("학습 시작")
     trainer.train()
