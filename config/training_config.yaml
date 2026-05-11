@@ -1,0 +1,49 @@
+# Llama 3.1 8B Instruct QLoRA 학습 설정 (Unsloth 최적화 버전)
+# A100 40GB + Unsloth 기준: 10k 샘플 약 40~60분
+#
+# 샘플 수별 예상 시간 (A100 + Unsloth):
+#   5k  샘플 × 2 epoch → 약 20~30분  (빠른 실험용)
+#   10k 샘플 × 2 epoch → 약 40~60분  ← 현재 기본값 (권장)
+#   20k 샘플 × 2 epoch → 약 80~120분 (더 높은 품질)
+#   50k 샘플 × 3 epoch → 약 5~8시간  (최고 품질, 클라우드 장기 세션)
+
+base_model: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+output_dir: "outputs/checkpoints/inheritance-tax-llm-8b-qlora"
+
+train_files:
+  - "data/processed/sft_base.jsonl"
+  - "data/synthetic/sft_synth.jsonl"
+eval_files: null        # null이면 train_files에서 2% 자동 분할
+max_samples: 10000      # 1시간 타겟: 10k 샘플. 전체 사용 시 null로 변경
+
+# LoRA
+lora_r: 16
+lora_alpha: 32
+lora_dropout: 0.05
+target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+# Training (Unsloth 최적화 값)
+seq_len: 2048
+epochs: 2.0             # Unsloth 속도로 2 epoch도 1시간 이내 가능
+micro_batch: 4          # Unsloth VRAM 절약 덕분에 1 → 4로 증가 (A100 기준)
+grad_accum: 4           # 실효 배치 = micro_batch(4) × grad_accum(4) = 16
+lr: 2.0e-4
+lr_scheduler: "cosine"
+warmup_ratio: 0.03
+weight_decay: 0.0
+optim: "adamw_8bit"     # Unsloth 권장 (paged_adamw_8bit → adamw_8bit)
+eval_steps: 100
+save_steps: 200
+logging_steps: 10
+
+seed: 42
+bf16: true
+gradient_checkpointing: true  # Unsloth의 "unsloth" 모드로 자동 적용
+report_to: "wandb"      # W&B 미사용 시 "none"으로 변경

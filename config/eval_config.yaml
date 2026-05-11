@@ -1,0 +1,17 @@
+# 평가 설정
+
+base_model: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+adapter_dir: "outputs/checkpoints/inheritance-tax-llm-8b-qlora"
+benchmark_path: "data/eval/benchmark.jsonl"
+output_path: "outputs/eval/predictions.jsonl"
+
+generation:
+  max_new_tokens: 768
+  temperature: 0.0    # 결정성 평가
+  top_p: 1.0
+  repetition_penalty: 1.05
+
+llm_judge:
+  enabled: true
+  provider: "openai"   # 또는 "anthropic"
+  model: "gpt-4o"      # 강력한 judge 모델 권장

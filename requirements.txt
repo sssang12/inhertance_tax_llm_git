@@ -1,0 +1,50 @@
+# --- Core ML ---
+torch>=2.3.0
+transformers>=4.44.0
+accelerate>=0.33.0
+peft>=0.12.0
+trl>=0.10.1
+datasets>=2.20.0
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+
+# --- Unsloth (빠른 QLoRA 학습: 2~5배 속도, 40~60% VRAM 절약) ---
+# 설치 방법 (CUDA 버전에 맞게 선택):
+#   pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+# bitsandbytes는 Unsloth fallback 모드용으로만 유지
+bitsandbytes>=0.43.0   # Unsloth 미설치 시 fallback용
+
+# --- Inference (RunPod/서버 환경) ---
+# vLLM은 Apple Silicon 미지원. 로컬 추론은 llama.cpp 또는 Ollama 사용
+vllm>=0.5.4            # CUDA 서버 환경 전용 (RunPod 등)
+
+# --- Data collection ---
+requests>=2.32.0
+httpx>=0.27.0
+beautifulsoup4>=4.12.0
+lxml>=5.2.0
+playwright>=1.45.0
+tenacity>=8.5.0
+tqdm>=4.66.0
+
+# --- Synthetic data (teacher models) ---
+openai>=1.40.0
+anthropic>=0.34.0
+
+# --- Processing ---
+pandas>=2.2.0
+numpy>=1.26.0
+pyyaml>=6.0.1
+python-dotenv>=1.0.1
+regex>=2024.5.15
+kss>=4.5.4               # Korean sentence splitter
+
+# --- Evaluation ---
+scikit-learn>=1.5.0
+rouge-score>=0.1.2
+sacrebleu>=2.4.2
+evaluate>=0.4.2
+
+# --- Logging / Experiment tracking ---
+wandb>=0.17.0
+loguru>=0.7.2

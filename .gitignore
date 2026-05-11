@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+data/raw/
+data/processed/
+data/synthetic/
+outputs/checkpoints/
+outputs/merged/
+outputs/eval/
+wandb/
+*.log
+.DS_Store

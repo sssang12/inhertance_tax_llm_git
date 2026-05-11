@@ -1,0 +1,37 @@
+# 데이터 수집·전처리 설정
+
+raw_dir: "data/raw"
+processed_dir: "data/processed"
+synthetic_dir: "data/synthetic"
+eval_dir: "data/eval"
+
+# 수집 대상 법령 (정확한 명칭)
+target_laws:
+  - "상속세 및 증여세법"
+  - "상속세 및 증여세법 시행령"
+  - "상속세 및 증여세법 시행규칙"
+  - "국세기본법"
+  - "국세기본법 시행령"
+  - "국세징수법"
+  - "조세특례제한법"
+
+# 판례/심판/예규 검색어
+search_keywords:
+  - "상속세"
+  - "증여세"
+  - "가업상속공제"
+  - "사전증여 합산과세"
+  - "명의신탁 증여의제"
+  - "비상장주식 평가"
+  - "꼬마빌딩 감정평가"
+  - "유류분"
+  - "한정승인"
+  - "상속포기"
+
+# 합성 데이터 생성
+synthetic:
+  provider: "openai"       # openai | anthropic
+  model: "gpt-4o-mini"     # 비용 효율적인 교사 모델
+  pairs_per_seed: 3
+  max_seeds: 20000         # 최종 약 60k pair 목표
+  concurrency: 4
