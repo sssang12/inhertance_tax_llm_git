@@ -264,7 +264,7 @@ def main(config_path: str):
 
     trainer = SFTTrainer(
         model=model,
-        processing_class=tokenizer,
+        tokenizer=tokenizer,
         args=sft_args,
         train_dataset=train_ds,
         eval_dataset=eval_ds,
