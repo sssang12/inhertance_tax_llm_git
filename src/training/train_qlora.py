@@ -217,12 +217,17 @@ def main(config_path: str):
     )
 
     def _fmt(examples):
-        # SFTTrainer는 배치(dict of lists)를 전달하므로 개별 샘플로 분리
-        texts = []
-        for i in range(len(examples["instruction"])):
-            ex = {k: v[i] for k, v in examples.items()}
-            texts.append(format_for_sft(ex, tokenizer))
-        return texts
+        # Unsloth는 단일 샘플(dict of scalars)과 배치(dict of lists) 두 방식으로 호출
+        if isinstance(examples.get("instruction", ""), str):
+            # 단일 샘플 호출 (Unsloth 초기 테스트용)
+            return [format_for_sft(examples, tokenizer)]
+        else:
+            # 배치 호출
+            texts = []
+            for i in range(len(examples["instruction"])):
+                ex = {k: v[i] for k, v in examples.items()}
+                texts.append(format_for_sft(ex, tokenizer))
+            return texts
 
     collator = DataCollatorForCompletionOnlyLM(
         response_template=RESPONSE_TEMPLATE,
