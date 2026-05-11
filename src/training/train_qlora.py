@@ -216,8 +216,13 @@ def main(config_path: str):
         f"(A100+Unsloth 기준 약 {estimated_steps * 0.3 / 60:.0f}~{estimated_steps * 0.5 / 60:.0f}분)"
     )
 
-    def _fmt(ex):
-        return format_for_sft(ex, tokenizer)
+    def _fmt(examples):
+        # SFTTrainer는 배치(dict of lists)를 전달하므로 개별 샘플로 분리
+        texts = []
+        for i in range(len(examples["instruction"])):
+            ex = {k: v[i] for k, v in examples.items()}
+            texts.append(format_for_sft(ex, tokenizer))
+        return texts
 
     collator = DataCollatorForCompletionOnlyLM(
         response_template=RESPONSE_TEMPLATE,
